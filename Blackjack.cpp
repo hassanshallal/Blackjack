@@ -83,29 +83,38 @@ void Session::getInitialBankroll() {
 }
 
 void Session::getNumDecks() {
+    string dummy;
     cout << "You can play on a table with 1, 2, 4, or 8 decks. Enter 1, 2, 4, or 8 to pick your table!" << endl;
     cin >> numDecks;
+
+    if (cin.fail()) {
+        cin.clear();
+        cin >> dummy;
+    };
     bool validNumDecks;
     while (!validNumDecks) {
         switch (numDecks) {
-            case '1':
+            case 1:
                 validNumDecks = true;
                 break;
-            case '2':
+            case 2:
                 validNumDecks = true;
                 break;
-            case '4':
+            case 4:
                 validNumDecks = true;
                 break;
-            case '8':
+            case 8:
                 validNumDecks = true;
                 break;
             default:
                 cout << "Unrecognized value. Please enter 1, 2, 4, or 8 to pick your table" << endl;
                 validNumDecks = false;
                 cin >> numDecks;
-
-        }
+                if (cin.fail()) {
+                    cin.clear();
+                    cin >> dummy;
+                };
+        };
     };
     numCards = deckSize * numDecks;
     cout << " " << endl;
@@ -181,27 +190,27 @@ Card* Session::shuffleDecks(Card *initializedCards) {
 
 bool Session::reachShuffleLimit(int currentPosition) {
     switch (numDecks) {
-        case '1':
+        case 1:
             if (currentPosition > numCards - 15) {
                 return 1;
             } else {
                 return 0;
             }; //4 aces +  4 2's + 4 3's = 12 cards + 2 cards for the dealer + safety card
-        case '2':
+        case 2:
             if (currentPosition > numCards - 18) {
                 return 1;
             } else {
                 return 0;
             }; // 8 aces + 7 2's = 15 cards + 2 cards for the dealer + safety card
 
-        case '4':
+        case 4:
             if (currentPosition > numCards - 20) {
                 return 1;
             } else {
                 return 0;
             }; // 12 aces + 5 2's = 17 cards + 2 cards for the dealer + safety card
 
-        case '8':
+        case 8:
             if (currentPosition > numCards - 25) {
                 return 1;
             } else {
@@ -235,7 +244,7 @@ void Round::getCurrentBet(Session &session) {
         cout << "How much would you like to bet? Minimum bet is $1 and maximum bet is $" << flush;
         cout << session.bankroll << endl;
         cin >> currentBet;
-        if (cin.fail()){
+        if (cin.fail()) {
             cin.clear();
             cin >> dummy;
         };
@@ -363,6 +372,7 @@ void Round::outputPlayerInitialHand(Card *shuffledCards, Session & session) {
 }
 
 void Round::outputDealerInitialHand(Card *shuffledCards, Session &session, int card) {
+    string dummy;
     if (card == 1) {
         cout << "Dealer's first card is " << flush;
         if (shuffledCards[session.currentPosition + 1].face == "Ace") {
@@ -375,12 +385,26 @@ void Round::outputDealerInitialHand(Card *shuffledCards, Session &session, int c
                 cout << " You can insure your current bit in case dealer has a blackjack. The way insurance go is you bet half your current bet, if dealer has a blackjack, you breakeven and lose no money, if dealer doesn't have blackjack, you lose your insurance and continue the game as usual." << endl;
                 cout << " Would you like to insure? Please enter 0 for no and 1 for yes." << endl;
                 cin >> playerInsure;
-                if (playerInsure) {
-                    cout << "You chose to insure your bet using an amount of $" << flush;
-                    cout << 0.5 * currentBet << endl;
-                } else {
-                    cout << "You chose not to insure your bet." << endl;
+                if (cin.fail()) {
+                    cin.clear();
+                    cin >> dummy;
                 };
+
+                switch (playerInsure) {
+                    case 1:
+                        cout << "You chose to insure your bet using an amount of $" << flush;
+                        cout << 0.5 * currentBet << endl;
+                    case 0:
+                        cout << "You chose not to insure your bet." << endl;
+                    default:
+                        cout << "Unrecognized value; Please enter 0 for no and 1 for yes." << endl;
+                        cin >> playerInsure;
+                        if (cin.fail()) {
+                            cin.clear();
+                            cin >> dummy;
+                        };
+                };
+
             };
         } else {
             shuffledCards[session.currentPosition + 1].print();
@@ -655,6 +679,8 @@ Player::Player() {
 }
 
 void Player::getPlayerDecision2(Card *shuffledCards, Session &session, Round &round, Dealer & dealer) {
+    string dummy;
+
     round.dealPlayer(shuffledCards, session);
 
     if (round.totalPlayer > 21) {
@@ -665,16 +691,21 @@ void Player::getPlayerDecision2(Card *shuffledCards, Session &session, Round &ro
     } else {
         cout << "You can enter: 1 for hit, 2 for stay." << endl;
         cin >> playerDecision2;
+        if (cin.fail()) {
+            cin.clear();
+            cin >> dummy;
+        };
         cout << " " << endl;
         bool validDecision2 = 0;
         while (!validDecision2) {
+
             switch (playerDecision2) {
-                case '1':
+                case 1:
                     validDecision2 = true;
                     cout << "You decided to hit." << endl;
                     this -> getPlayerDecision2(shuffledCards, session, round, dealer); //recursive call. As long as the parameters are the same, iterative solution is better than recursive solution. Recursive is better when the input parameters are different
                     break;
-                case '2':
+                case 2:
                     validDecision2 = true;
                     if (round.playerAces && (((round.totalPlayer) + 10) < 22)) {
                         round.totalPlayer += 10; // Take the highest for the player
@@ -689,6 +720,10 @@ void Player::getPlayerDecision2(Card *shuffledCards, Session &session, Round &ro
                 default:
                     cout << "Unrecognized value. Please enter 1 for hit, 2 for stay." << endl;
                     cin >> playerDecision2;
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin >> dummy;
+                    };
                     cout << " " << endl;
                     bool validDecision2 = 0;
             };
@@ -697,22 +732,28 @@ void Player::getPlayerDecision2(Card *shuffledCards, Session &session, Round &ro
 };
 
 int Player::getPlayerDecisionsSplitMode(Card *shuffledCards, Session &session, Round & round) {
+    string dummy;
+
     if (round.totalPlayer > 21) {
         cout << "you busted this hand." << endl;
     } else {
         cout << "You can enter: 1 for hit, 2 for stay." << endl;
         cin >> playerDecision2;
+        if (cin.fail()) {
+            cin.clear();
+            cin >> dummy;
+        };
         cout << " " << endl;
         bool validDecision2 = 0;
         while (!validDecision2) {
             switch (playerDecision2) {
-                case '1':
+                case 1:
                     validDecision2 = true;
                     cout << "You decided to hit." << endl;
                     round.dealPlayer(shuffledCards, session);
                     this -> getPlayerDecisionsSplitMode(shuffledCards, session, round); //recursive call. As long as the parameters are the same, iterative solution is better than recursive solution. Recursive is better when the input parameters are different
                     break;
-                case '2':
+                case 2:
                     validDecision2 = true;
                     if (round.playerAces && (((round.totalPlayer) + 10) < 22)) {
                         round.totalPlayer += 10; // Take the highest for the player
@@ -726,6 +767,10 @@ int Player::getPlayerDecisionsSplitMode(Card *shuffledCards, Session &session, R
                 default:
                     cout << "Unrecognized value. Please enter 1 for hit, 2 for stay." << endl;
                     cin >> playerDecision2;
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin >> dummy;
+                    };
                     cout << " " << endl;
                     bool validDecision2 = 0;
             };
@@ -736,6 +781,8 @@ int Player::getPlayerDecisionsSplitMode(Card *shuffledCards, Session &session, R
 }
 
 void Player::getPlayerDecision1(Card *shuffledCards, Session &session, Round &round, Dealer & dealer) {
+    string dummy;
+
     if (!round.hasBlackJackPlayer && !round.hasBlackJackDealer) {
         if (round.playerInsure) {
             cout << "You lose your insurance cause dealer doesn't have a blackjack!" << endl;
@@ -751,26 +798,58 @@ void Player::getPlayerDecision1(Card *shuffledCards, Session &session, Round &ro
         cout << "Player will make some decisions before the dealer takes over." << endl;
         switch (round.canSplit) {
             case 1:
-                cout << "You can enter: 1 for hit, 2 for stay, 3 for surrender, 4 for double, or 5 for split!" << endl;
-                cin >> playerDecision1;
-                cout << " " << endl;
+                if (session.bankroll >= 2 * round.currentBet) {
+                    cout << "You can enter: 1 for hit, 2 for stay, 3 for surrender, 4 for double, or 5 for split!" << endl;
+                    cin >> playerDecision1;
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin >> dummy;
+                    };
+                    cout << " " << endl;
+                } else {
+                    while (!((playerDecision1 == 1) || (playerDecision1 == 2) ||  (playerDecision1 == 3))) {
+                        cout << "You can enter: 1 for hit, 2 for stay, 3 for surrender. You can't double or split because you don't have enough cash in your bankroll to double your current bet." << endl;
+                        cin >> playerDecision1;
+                        if (cin.fail()) {
+                            cin.clear();
+                            cin >> dummy;
+                        };
+                        cout << " " << endl;
+                    };
+                };
                 break;
             case 0:
-                cout << "You can enter: 1 for hit, 2 for stay, 3 for surrender, 4 for double." << endl;
-                cin >> playerDecision1;
-                cout << " " << endl;
+                if (session.bankroll >= 2 * round.currentBet) {
+                    cout << "You can enter: 1 for hit, 2 for stay, 3 for surrender, 4 for double." << endl;
+                    cin >> playerDecision1;
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin >> dummy;
+                    };
+                    cout << " " << endl;
+                } else {
+                    while (!((playerDecision1 == 1) || (playerDecision1 == 2) ||  (playerDecision1 == 3))) {
+                        cout << "You can enter: 1 for hit, 2 for stay, 3 for surrender. You can't double or split because you don't have enough cash in your bankroll to double your current bet." << endl;
+                        cin >> playerDecision1;
+                        if (cin.fail()) {
+                            cin.clear();
+                            cin >> dummy;
+                        };
+                        cout << " " << endl;
+                    };
+                };
                 break;
         };
 
         bool validDecision1 = 0;
         while (!validDecision1) {
             switch (playerDecision1) {
-                case '1':
+                case 1:
                     validDecision1 = true;
                     cout << "You decided to hit." << endl;
                     getPlayerDecision2(shuffledCards, session, round, dealer);
                     break;
-                case '2':
+                case 2:
                     validDecision1 = true;
                     if (round.playerAces && (((round.totalPlayer) + 10) < 22)) {
                         round.totalPlayer += 10; // Take the highest for the player
@@ -782,13 +861,15 @@ void Player::getPlayerDecision1(Card *shuffledCards, Session &session, Round &ro
                     };
                     dealer.dealerTakeOver(shuffledCards, session, round);
                     break;
-                case '3':
-                    validDecision1 = true;
+                case 3:
+                    validDecision1 = true;      
                     session.bankroll -= 0.5 * round.currentBet;
                     cout << "You decided to surrender. Your current bankroll is $" << flush;
                     cout << session.bankroll << endl;
+                    cout << "Dealer's second card is " + round.dealerSecondCardFace + " of " + round.dealerSecondCardSuit << endl;
                     break;
-                case '4':
+
+                case 4:
                     validDecision1 = true;
                     round.currentBet *= 2;
                     cout << "You decided to double. You will only be dealt one more card. Your current bet is doubled to $" << flush;
@@ -817,7 +898,8 @@ void Player::getPlayerDecision1(Card *shuffledCards, Session &session, Round &ro
                         cout << session.bankroll << endl;
                         break;
                     };
-                case '5':
+
+                case 5:
                     switch (round.canSplit) {
                         case 1:
                             // we need to integrate two hands with the dealer!
@@ -881,6 +963,10 @@ void Player::getPlayerDecision1(Card *shuffledCards, Session &session, Round &ro
                     cout << "Unrecognized value. Please enter 1 for hit, 2 for stay, 3 for surrender, 4 for double, or 5 if you can and want to split!" << endl;
                     validDecision1 = false;
                     cin >> playerDecision1;
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin >> dummy;
+                    };
                     break;
             };
         };

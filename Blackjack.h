@@ -30,9 +30,9 @@ public:
 
     //instance variables
     string name;
-    char initialBankroll;
+    int initialBankroll;
     double bankroll; // If you initialize bankroll to an int and the user enters 100.5 or any fraction, a bug obtains. Use double to avoid this bug.
-    char numDecks;
+    int numDecks;
     const int deckSize = 52; //hint by Mentor
     int numCards;
     int currentPosition = 0;
@@ -71,7 +71,7 @@ public:
     bool playerAces = 0; // true in case th player has at least one ace
     bool dealerAces = 0; // true in case the dealer has at least one ace
     
-    bool playerInsure = 0;
+    int playerInsure = 0;
     string dealerSecondCardFace;
     string dealerSecondCardSuit;
     int dealerSecondCardValue;
@@ -111,8 +111,8 @@ public:
 class Player {
 public:
     //instance variables
-    char playerDecision1;
-    char playerDecision2;
+    int playerDecision1;
+    int playerDecision2;
 
     //methods
     Player();
