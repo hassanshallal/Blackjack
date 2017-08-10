@@ -6,7 +6,7 @@ So, I worked on this project after completing the Introducion to C++ MIT class (
 This is my first time using object-oriented design and writing C++ code, so please feel free to ask any question in case you have any.
 
 
-In order to playe the game, you need to compile first:
+In order to playe the game, you can either use playBlackjack executable or you need to compile using the source files:
 1) Change directory to the folder containing the main.cpp, Blackjack.cpp, and Blackjack.h files
 2) Type the following command to compile and link: g++ main.cpp Blackjack.cpp -o Blackjack.o
 3) Type the following command to play: ./Blackjack.o
