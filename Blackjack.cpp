@@ -67,11 +67,18 @@ void Session::getName() {
 //cout << stod("  99.999  ") << endl;
 
 void Session::getInitialBankroll() {
+    string dummy;
     while (bankroll < 100) {
         cout << "The minimum amount to pay for chips is $100. How much you would like to pay for chips (no change is allowed in the game)." << endl;
         cin >> bankroll;
-        initialBankroll = bankroll;
-        cout << " " << endl;
+        if (!cin.fail()) {
+            initialBankroll = bankroll;
+            cout << " " << endl;
+        } else {
+            cin.clear();
+            cin >> dummy;
+        };
+
     };
 }
 
@@ -223,10 +230,15 @@ void Round::getCurrentBet(Session &session) {
 }
  */
 void Round::getCurrentBet(Session &session) {
+    string dummy;
     while (currentBet < 1 || currentBet > 100) {
         cout << "How much would you like to bet? Minimum bet is $1 and maximum bet is $" << flush;
         cout << session.bankroll << endl;
         cin >> currentBet;
+        if (cin.fail()){
+            cin.clear();
+            cin >> dummy;
+        };
         if (currentBet > session.bankroll) {
             cout << "Sorry you don't have enough money in your bankroll to bet that amount." << endl;
             session.getInitialBankroll();
